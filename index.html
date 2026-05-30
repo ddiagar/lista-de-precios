@@ -33,6 +33,7 @@ h1{
 .producto{
     display:flex;
     justify-content:space-between;
+    align-items:center;
     padding:10px 0;
     border-bottom:1px solid #eee;
 }
@@ -66,80 +67,98 @@ h1{
     text-decoration:none;
     font-weight:bold;
 }
+
+.error{
+    color:red;
+    text-align:center;
+    padding:20px;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🥩 Lista de Precios</h1>
-<p>Vacuno • Cerdo • Pollo</p>
+    <h1>🥩 Lista de Precios</h1>
+    <p>Vacuno • Cerdo • Pollo</p>
 </header>
 
-<div id="contenido"></div>
+<div id="contenido">
+    <p>Cargando productos...</p>
+</div>
 
-<a class="whatsapp"
-href="https://wa.me/56962608852?text=Hola,%20quiero%20consultar%20por%20sus%20productos"
-target="_blank">
-📲 WhatsApp
+<a
+    class="whatsapp"
+    href="https://wa.me/56962608852?text=Hola,%20quiero%20consultar%20por%20sus%20productos"
+    target="_blank">
+    📲 WhatsApp
 </a>
 
 <script>
 
-const csvUrl =
-'https://docs.google.com/spreadsheets/d/e/2PACX-1vRq46UR3lu74uwh6pjzBiMGD9li9tZm2I2HUAlXpIJmGAjtv9YF66ZluT5MMEHx__9Lv4PzNIAh80ru/pub?gid=0&single=true&output=csv';
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRq46UR3lu74uwh6pjzBiMGD9li9tZm2I2HUAlXpIJmGAjtv9YF66ZluT5MMEHx__9Lv4PzNIAh80ru/pub?gid=0&single=true&output=csv";
 
 fetch(csvUrl)
 .then(response => response.text())
 .then(csv => {
 
-const lineas = csv.trim().split('\n');
-const datos = lineas.slice(1);
+    const lineas = csv.trim().split('\n');
+    const datos = lineas.slice(1);
 
-let categorias = {};
+    let categorias = {};
 
-datos.forEach(linea => {
+    datos.forEach(linea => {
 
-const columnas = linea.split(',');
+        const columnas = linea.split(',');
 
-const categoria = columnas[0];
-const producto = columnas[1];
-const marca = columnas[2];
-const precio = columnas[3];
+        const categoria = columnas[0]?.trim();
+        const producto = columnas[1]?.trim();
+        const marca = columnas[2]?.trim();
+        const precio = columnas[3]?.trim();
 
-if(!categorias[categoria]){
-categorias[categoria] = [];
-}
+        if(!categoria) return;
 
-categorias[categoria].push({
-producto,
-marca,
-precio
-});
+        if(!categorias[categoria]){
+            categorias[categoria] = [];
+        }
 
-});
+        categorias[categoria].push({
+            producto,
+            marca,
+            precio
+        });
 
-let html = '';
+    });
 
-for(const categoria in categorias){
+    let html = '';
 
-let emoji = '📦';
+    for(const categoria in categorias){
 
-if(categoria.toLowerCase() === 'pollo') emoji = '🐔';
-if(categoria.toLowerCase() === 'cerdo') emoji = '🐷';
-if(categoria.toLowerCase() === 'vacuno') emoji = '🥩';
+        let emoji = '📦';
 
-html += <div class="categoria"> <h2>${emoji} ${categoria}</h2>;
+        if(categoria.toLowerCase() === 'pollo') emoji = '🐔';
+        if(categoria.toLowerCase() === 'cerdo') emoji = '🐷';
+        if(categoria.toLowerCase() === 'vacuno') emoji = '🥩';
 
-categorias[categoria].forEach(item => {
+        html +=         <div class="categoria">             <h2>${emoji} ${categoria}</h2>        ;
 
-html +=  <div class="producto"> <div> <div class="nombre">${item.producto}</div> <div class="marca">${item.marca}</div> </div>  <div class="precio"> $${Number(item.precio).toLocaleString('es-CL')} </div> </div>;
-});
+        categorias[categoria].forEach(item => {
 
-html += '</div>';
-}
+            html +=             <div class="producto">                 <div>                     <div class="nombre">${item.producto}</div>                     <div class="marca">${item.marca}</div>                 </div>                  <div class="precio">                     $${Number(item.precio).toLocaleString('es-CL')}                 </div>             </div>            ;
 
-document.getElementById('contenido').innerHTML = html;
+        });
+
+        html += </div>;
+    }
+
+    document.getElementById('contenido').innerHTML = html;
+
+})
+.catch(error => {
+
+    console.error(error);
+
+    document.getElementById('contenido').innerHTML =         <div class="error">             Error cargando la lista de precios.<br>             Revisa la consola (F12).         </div>    ;
 
 });
 
