@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Precios</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:20px;
+    background:#f5f5f5;
+}
+
+header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+h1{
+    margin:0;
+}
+
+.categoria{
+    background:white;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:20px;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+.producto{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid #eee;
+}
+
+.producto:last-child{
+    border-bottom:none;
+}
+
+.nombre{
+    font-weight:bold;
+}
+
+.marca{
+    font-size:0.85em;
+    color:#666;
+}
+
+.precio{
+    font-weight:bold;
+    color:#008000;
+}
+
+.whatsapp{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:#25D366;
+    color:white;
+    padding:15px 20px;
+    border-radius:50px;
+    text-decoration:none;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🥩 Lista de Precios</h1>
+<p>Vacuno • Cerdo • Pollo</p>
+</header>
+
+<div id="contenido"></div>
+
+<a class="whatsapp"
+href="https://wa.me/56962608852?text=Hola,%20quiero%20consultar%20por%20sus%20productos"
+target="_blank">
+📲 WhatsApp
+</a>
+
+<script>
+
+const csvUrl =
+'https://docs.google.com/spreadsheets/d/e/2PACX-1vRq46UR3lu74uwh6pjzBiMGD9li9tZm2I2HUAlXpIJmGAjtv9YF66ZluT5MMEHx__9Lv4PzNIAh80ru/pub?gid=0&single=true&output=csv';
+
+fetch(csvUrl)
+.then(response => response.text())
+.then(csv => {
+
+const lineas = csv.trim().split('\n');
+const datos = lineas.slice(1);
+
+let categorias = {};
+
+datos.forEach(linea => {
+
+const columnas = linea.split(',');
+
+const categoria = columnas[0];
+const producto = columnas[1];
+const marca = columnas[2];
+const precio = columnas[3];
+
+if(!categorias[categoria]){
+categorias[categoria] = [];
+}
+
+categorias[categoria].push({
+producto,
+marca,
+precio
+});
+
+});
+
+let html = '';
+
+for(const categoria in categorias){
+
+let emoji = '📦';
+
+if(categoria.toLowerCase() === 'pollo') emoji = '🐔';
+if(categoria.toLowerCase() === 'cerdo') emoji = '🐷';
+if(categoria.toLowerCase() === 'vacuno') emoji = '🥩';
+
+html += <div class="categoria"> <h2>${emoji} ${categoria}</h2>;
+
+categorias[categoria].forEach(item => {
+
+html +=  <div class="producto"> <div> <div class="nombre">${item.producto}</div> <div class="marca">${item.marca}</div> </div>  <div class="precio"> $${Number(item.precio).toLocaleString('es-CL')} </div> </div>;
+});
+
+html += '</div>';
+}
+
+document.getElementById('contenido').innerHTML = html;
+
+});
+
+</script>
+
+</body>
+</html>
