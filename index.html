@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -16,8 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   
-  <!-- QR Code Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nOMdBmddKo8ODJKJeWNfliAPmXZtQlYJHRI3NObZAp8aYLYTFI59FLmRReSe5OPuyuZIL1NZRLwQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 
   <style>
     /* CSS VARIABLES - DESIGN SYSTEM */
@@ -161,17 +161,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 80px;
-      height: 80px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 50%;
+      width: 96px;
+      height: 96px;
       margin-bottom: 16px;
-      box-shadow: var(--shadow-md);
       animation: pulse-slow 3s infinite ease-in-out;
-      overflow: hidden;
-      padding: 8px;
-      transition: background var(--transition-normal), border var(--transition-normal);
     }
 
     .logo-img {
@@ -787,10 +780,6 @@
           <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
           Compartir
         </button>
-        <button class="action-btn" id="qrBtn">
-          <svg viewBox="0 0 24 24"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm-2 16h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm-6 4h3v3h-3v-3zm3 3h3v3h-3v-3zm-3 3h3v3h-3v-3zm3-3h3v-3h-3v3zm3 3h3v-3h-3v3zm-3-6h3v-3h-3v3zm6 6h3v-3h-3v3zm-3-9h3v-3h-3v3z"/></svg>
-          Ver QR
-        </button>
       </div>
     </div>
 
@@ -870,41 +859,7 @@
     Preguntar por WhatsApp
   </a>
 
-  <!-- MODAL FOR QR CODE GENERATION & PRINTING -->
-  <div class="modal-backdrop" id="qrModal">
-    <div class="modal-content">
-      
-      <!-- Hidden layout for QR Print Mode only -->
-      <div class="qr-print-header">
-        <h2>Carnes Lira</h2>
-        <p>Escanéame con tu celular para ver la lista de precios siempre actualizada</p>
-      </div>
 
-      <button class="modal-close" id="closeModal" aria-label="Cerrar modal">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-      </button>
-      
-      <h3 class="modal-title">Código QR del Menú</h3>
-      <p class="modal-desc">Generado para que tus clientes puedan escanearlo y ver los precios actuales en sus celulares.</p>
-      
-      <div class="qr-frame">
-        <div id="qrcode"></div>
-      </div>
-      
-      <div class="modal-actions">
-        <button class="modal-btn modal-btn-primary" id="downloadQrBtn">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-          Descargar PNG
-        </button>
-      </div>
-
-      <!-- Hidden layout for QR Print Mode only -->
-      <div class="qr-print-footer">
-        <p>Visítanos en línea: <strong id="printUrlText"></strong></p>
-      </div>
-      
-    </div>
-  </div>
 
   <script>
     // DATA SOURCE
@@ -925,14 +880,7 @@
     const sunIcon = document.getElementById('sunIcon');
     const moonIcon = document.getElementById('moonIcon');
     const themeText = document.getElementById('themeText');
-    const qrBtn = document.getElementById('qrBtn');
     const shareBtn = document.getElementById('shareBtn');
-    const qrModal = document.getElementById('qrModal');
-    const closeModal = document.getElementById('closeModal');
-
-    const downloadQrBtn = document.getElementById('downloadQrBtn');
-    const printUrlText = document.getElementById('printUrlText');
-    const qrcodeElement = document.getElementById('qrcode');
 
     // 1. ROBUST CSV PARSER (Handles quotes, commas, escapes, and windows/mac line-breaks)
     function parseCSV(text) {
@@ -1230,72 +1178,7 @@
     const floatBtn = document.getElementById('whatsappFloatBtn');
     floatBtn.href = `https://wa.me/56962608852?text=${encodeURIComponent("Hola, vi tu lista de precios (" + window.location.href + ") y me gustaría hacer una consulta.")}`;
 
-    // 8. QR CODE GENERATION & PRINT MODAL
-    let qrcodeInstance = null;
 
-    qrBtn.addEventListener('click', () => {
-      // Set print URLs
-      const currentUrl = window.location.href;
-      printUrlText.innerText = currentUrl.replace(/^https?:\/\//, '');
-
-      // Open Modal
-      qrModal.classList.add('active');
-      
-      // Delay slightly to ensure DOM dimensions for library calculation
-      setTimeout(() => {
-        if (!qrcodeInstance) {
-          if (window.QRCode) {
-            qrcodeInstance = new QRCode(qrcodeElement, {
-              text: currentUrl,
-              width: 256,
-              height: 256,
-              colorDark : "#000000",
-              colorLight : "#ffffff",
-              correctLevel : QRCode.CorrectLevel.H
-            });
-          } else {
-            // Fallback if library fails (e.g. offline) - load image from QR generator service
-            qrcodeElement.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(currentUrl)}" alt="Código QR" width="256" height="256" style="display:block; margin: 0 auto;"/>`;
-          }
-        }
-      }, 100);
-    });
-
-    function closeQrModal() {
-      qrModal.classList.remove('active');
-    }
-
-    closeModal.addEventListener('click', closeQrModal);
-    qrModal.addEventListener('click', (e) => {
-      if (e.target === qrModal) closeQrModal();
-    });
-
-    // Downloader for QR code image
-    downloadQrBtn.addEventListener('click', () => {
-      // Search for img tag inside qr element
-      const qrImg = qrcodeElement.querySelector('img');
-      const qrCanvas = qrcodeElement.querySelector('canvas');
-      
-      if (qrImg && qrImg.src) {
-        // Download directly or through link
-        const link = document.createElement('a');
-        link.href = qrImg.src;
-        link.download = 'qr_lista_de_precios.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else if (qrCanvas) {
-        // If it rendered as canvas instead of image
-        const link = document.createElement('a');
-        link.href = qrCanvas.toDataURL('image/png');
-        link.download = 'qr_lista_de_precios.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert('Cargando el código QR, intenta nuevamente en un segundo.');
-      }
-    });
 
 
 
