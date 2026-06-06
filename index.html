@@ -283,21 +283,55 @@
     }
 
     /* CATEGORIES PILLS */
+    .categories-pills-scroll {
+      position: relative;
+    }
+
+    .categories-pills-scroll::before,
+    .categories-pills-scroll::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 32px;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    .categories-pills-scroll::before {
+      left: 0;
+      background: linear-gradient(to right, var(--card-bg) 20%, transparent);
+    }
+
+    .categories-pills-scroll::after {
+      right: 0;
+      background: linear-gradient(to left, var(--card-bg) 20%, transparent);
+    }
+
+    .categories-pills-scroll.can-scroll-left::before,
+    .categories-pills-scroll.can-scroll-right::after {
+      opacity: 1;
+    }
+
     .categories-pills {
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      scrollbar-width: none; /* Firefox */
-      padding: 2px 0;
+      scrollbar-width: none;
+      padding: 2px 4px;
+      scroll-snap-type: x proximity;
       -webkit-overflow-scrolling: touch;
     }
 
     .categories-pills::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
+      display: none;
     }
 
     .pill {
       flex-shrink: 0;
+      scroll-snap-align: start;
       background: var(--bg-app);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
@@ -308,6 +342,7 @@
       cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       transition: all var(--transition-fast);
     }
@@ -701,6 +736,28 @@
       50% { box-shadow: 0 4px 24px rgba(37, 211, 102, 0.7); }
     }
 
+    @media (max-width: 540px) {
+      .categories-pills-scroll::before,
+      .categories-pills-scroll::after {
+        display: none;
+      }
+
+      .categories-pills {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        overflow-x: visible;
+        scroll-snap-type: none;
+        padding: 0;
+      }
+
+      .pill {
+        width: 100%;
+        padding: 11px 10px;
+        font-size: 0.82rem;
+      }
+    }
+
     /* PRINT STYLES - Optimized for QR printout */
     @media print {
       body {
@@ -823,11 +880,13 @@
         </button>
       </div>
       
-      <div class="categories-pills" id="categoryPills">
-        <button class="pill active" data-category="all">🔍 Todas</button>
-        <button class="pill" data-category="pollo">🐔 Pollo</button>
-        <button class="pill" data-category="cerdo">🐷 Cerdo</button>
-        <button class="pill" data-category="vacuno">🥩 Vacuno</button>
+      <div class="categories-pills-scroll" id="categoryPillsScroll">
+        <div class="categories-pills" id="categoryPills">
+          <button class="pill" data-category="pollo">🐔 Pollo</button>
+          <button class="pill" data-category="cerdo">🐷 Cerdo</button>
+          <button class="pill" data-category="vacuno">🥩 Vacuno</button>
+          <button class="pill active" data-category="all">🔍 Todas</button>
+        </div>
       </div>
     </div>
 
@@ -892,6 +951,7 @@
     const searchInput = document.getElementById('searchInput');
     const clearSearch = document.getElementById('clearSearch');
     const categoryPills = document.getElementById('categoryPills');
+    const categoryPillsScroll = document.getElementById('categoryPillsScroll');
     const themeToggle = document.getElementById('themeToggle');
     const sunIcon = document.getElementById('sunIcon');
     const moonIcon = document.getElementById('moonIcon');
@@ -1138,6 +1198,23 @@
     });
 
     // 5. CATEGORIES PILLS FILTERING
+    function updatePillsScrollHint() {
+      if (!categoryPillsScroll || !categoryPills) return;
+
+      const isGrid = window.matchMedia('(max-width: 540px)').matches;
+      if (isGrid) {
+        categoryPillsScroll.classList.remove('can-scroll-left', 'can-scroll-right');
+        return;
+      }
+
+      const maxScroll = categoryPills.scrollWidth - categoryPills.clientWidth;
+      categoryPillsScroll.classList.toggle('can-scroll-right', maxScroll > 2 && categoryPills.scrollLeft < maxScroll - 2);
+      categoryPillsScroll.classList.toggle('can-scroll-left', categoryPills.scrollLeft > 2);
+    }
+
+    categoryPills.addEventListener('scroll', updatePillsScrollHint, { passive: true });
+    window.addEventListener('resize', updatePillsScrollHint);
+
     categoryPills.addEventListener('click', (e) => {
       const button = e.target.closest('.pill');
       if (!button) return;
@@ -1147,6 +1224,11 @@
 
       currentFilter = button.dataset.category;
       renderPrecios();
+
+      if (!window.matchMedia('(max-width: 540px)').matches) {
+        button.scrollIntoView({ inline: 'nearest', behavior: 'smooth', block: 'nearest' });
+      }
+      updatePillsScrollHint();
     });
 
     // 6. THEME TOGGLER (Light / Dark Mode with persistency)
@@ -1212,6 +1294,8 @@
 
     // START
     init();
+    updatePillsScrollHint();
+    window.addEventListener('load', updatePillsScrollHint);
   </script>
 </body>
 </html>
