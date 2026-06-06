@@ -825,9 +825,9 @@
       
       <div class="categories-pills" id="categoryPills">
         <button class="pill active" data-category="all">🔍 Todas</button>
-        <button class="pill" data-category="vacuno">🥩 Vacuno</button>
-        <button class="pill" data-category="cerdo">🐷 Cerdo</button>
         <button class="pill" data-category="pollo">🐔 Pollo</button>
+        <button class="pill" data-category="cerdo">🐷 Cerdo</button>
+        <button class="pill" data-category="vacuno">🥩 Vacuno</button>
       </div>
     </div>
 
@@ -883,6 +883,8 @@
     let rawProducts = [];
     let currentFilter = 'all';
     let currentSearch = '';
+
+    const CATEGORY_ORDER = ['pollo', 'cerdo', 'vacuno'];
 
     // CORE DOM ELEMENTS
     const contenido = document.getElementById('contenido');
@@ -1019,7 +1021,16 @@
 
       let html = '';
 
-      for (const cat in grouped) {
+      const orderedCategories = Object.keys(grouped).sort((a, b) => {
+        const ia = CATEGORY_ORDER.indexOf(a.toLowerCase().trim());
+        const ib = CATEGORY_ORDER.indexOf(b.toLowerCase().trim());
+        if (ia === -1 && ib === -1) return a.localeCompare(b, 'es');
+        if (ia === -1) return 1;
+        if (ib === -1) return -1;
+        return ia - ib;
+      });
+
+      for (const cat of orderedCategories) {
         let emoji = '📦';
         const cleanCat = cat.toLowerCase().trim();
         if (cleanCat.includes('pollo')) emoji = '🐔';
